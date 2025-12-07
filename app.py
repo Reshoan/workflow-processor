@@ -683,6 +683,10 @@ if st.session_state.uploaded_files:
             errors = {}
             processed_workflows = []
 
+            # Track duplicate workflow names
+            workflow_name_counter = {}
+
+
             # Detect if dwe_group_list is uploaded (used later for enrichment)
             dwe_group_df = None
             for f in files_to_process:
@@ -712,7 +716,18 @@ if st.session_state.uploaded_files:
 
                         uploaded_file.seek(0)
                         workflow_name_trimmed = extract_workflow_name_from_file(uploaded_file)
-                        safe_workflow_folder = re.sub(r'[\\/*?:\[\]]', '_', workflow_name_trimmed) or f"workflow_{idx+1}"
+
+                        # Sanitize base name
+                        base_safe_name = re.sub(r'[\\/*?:\[\]]', '_', workflow_name_trimmed) or f"workflow_{idx+1}"
+
+                        # Handle duplicate workflow names
+                        if base_safe_name in workflow_name_counter:
+                            workflow_name_counter[base_safe_name] += 1
+                            safe_workflow_folder = f"{base_safe_name}_{workflow_name_counter[base_safe_name]}"
+                        else:
+                            workflow_name_counter[base_safe_name] = 0
+                            safe_workflow_folder = base_safe_name
+
 
                         # --- All existing processing logic remains unchanged ---
                         output_wb = Workbook()
