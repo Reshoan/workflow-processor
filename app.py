@@ -1,4 +1,3 @@
-%%writefile app.py
 from pyngrok import ngrok
 import streamlit as st
 import pandas as pd
@@ -906,3 +905,4 @@ if st.session_state.master_zip_bytes:
 # ------------------------------
 # End of file
 # ------------------------------
+
